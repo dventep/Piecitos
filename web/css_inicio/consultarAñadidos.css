@@ -1,0 +1,108 @@
+body {
+    margin: 0;
+    padding: 0;
+    -webkit-text-size-adjust: 100%;
+    background-color: #A5A58D;
+}
+
+table,
+td,
+tr {
+    vertical-align: top;
+    border-collapse: collapse;
+}
+
+* {
+    line-height: inherit;
+}
+
+a[x-apple-data-detectors=true] {
+    color: inherit !important;
+    text-decoration: none !important;
+}
+
+.containerAñadidos {
+    margin-top: 100px;
+    min-height: 75vh;
+}
+
+.div-Añadidos {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.itemTable {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    gap: 20px;
+}
+
+#btnComprar {
+    padding: 2vh 6vw;
+    font-size: 1.5vw;
+    background-color: white;
+}
+
+.descripcionFinalizarCompra {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    margin: 7vh 0;
+    font-size: 1.3vw;
+}
+
+#frsSectionCompra {
+    background-color: #cb997e;
+    padding: 1vh 8vw;
+    border-radius: 100px 100px 0px 0px;
+    display: flex;
+    justify-content: center;
+    color: whitesmoke;
+    font-weight: 600;
+    font-size: 1.4vw;
+}
+
+#sndSectionCompra {
+    padding: 3vh 3vw;
+    background-color: #eddcd2;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: center;
+}
+
+#sndSectionCompra label {
+    margin-top: 1vh;
+}
+
+#errorValue {
+    font-size: 1.2vw !important;
+    font-weight: 500;
+}
+
+#thrSectionCompra {
+    border-radius: 0px 0px 100px 100px;
+    padding: 1vh 8vw;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #cb997e;
+}
+
+#finalizarCompra {
+    padding: 1vh 1vw;
+    margin: 1vh 0;
+    background-color: #eddcd2;
+}
+
+@media (max-width: 670px) {
+    img.fullwidth,
+    img.fullwidthOnMobile {
+        max-width: 100% !important;
+    }
+}
