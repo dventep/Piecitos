@@ -130,8 +130,8 @@
                     {{ direccion_envio }}<br>{{ correo }}
                 </td>
                 <td>                    
-                    <span class="factura">N° FACTURA:</span>2312<br>
-                    <span class="factura">FECHA DE FACTURA:</span>29/02/2021<br>
+                    <span class="factura">N° FACTURA:</span>{{ Id_fact }}<br>
+                    <span class="factura">FECHA DE FACTURA:</span>{{ fecha_actual }}<br>
                     <span class="factura">MÉTODO DE PAGO:</span>{{ metodo }}<br>
                     <br>
                     <span class="valor_total">

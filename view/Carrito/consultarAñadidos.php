@@ -53,12 +53,6 @@
         </table>
         
         <button id="btnComprar" class="btn" data-url="<?php echo getUrl("Carrito", "Carrito", "metodoPago", false, "ajax"); ?>">Comprar</button>
-        <!--// <?php 
-            // if (mysqli_fetch_row($productos) > 0) {
-        //?> -->
             <div id="metodoPagoContainer"></div>
-        <!-- //<?php
-            // }
-        // ?> -->
     </div>
 </div>

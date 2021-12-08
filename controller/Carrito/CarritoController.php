@@ -39,6 +39,11 @@
 
             $sql = "SELECT Car_Id, Car_Total FROM Carrito WHERE Usu_Id = $Usuario";
             $totalCarrito = $obj->consult($sql);
+            // Probar todo lo de carrito pasarlo a factura - Carrito_detalle a Factura_detalle, Carrito a Factura
+
+            // Una vez funcione, hacen el delete de lo que hay en Carrito_detalle y Carrito.
+                
+            //
 
             include_once '../view/Carrito/consultarAñadidos.php';
         }
@@ -134,41 +139,41 @@
         }
         public function generarFactura() {
             $obj= new CarritoModel();
-            if (isset($_POST) and isset($_POST['direccionEnvio'])) {
-                
+            if (isset($_POST) and isset($_POST['direccionEnvio'])) {                
                 $variables = array();
+                
+                // Tomar la Zona Horaria y Enviarle los datos que necesito traer.
+                $dtz = new DateTimeZone("America/Bogota");
+                $dt = new DateTime("now", $dtz);
+                $currentTime = $dt->format('D, j/M/Y');                
+                $variables['fecha_actual'] = $currentTime;
+                
+                // Tomar Los datos del POST
                 $direccion = $_POST['direccionEnvio'];
+                $variables['direccion_envio'] = $direccion;
+                
                 $metodo_pago = $_POST['metodoPagoOption'];
                 $sql = "SELECT Met_Pag_Nombre FROM metodo_pago where Met_Pag_Id = $metodo_pago";
                 $metodo_sql = $obj->consult($sql);
                 foreach ($metodo_sql as $metodo) {
                     $variables['metodo'] = $metodo['Met_Pag_Nombre'];
-                    echo "metodo: ".$variables['metodo'];
                 }
-
-                $destino = "jorgemitrianorengifo@gmail.com";
-                $nombre = "David";
+                
                 $correo = "davidventepolo@gmail.com";
-                $telefono = "32124354";
+                echo "Correo: " . $_SESSION['correo']."<br>";
                 $contenido =  file_get_contents("../view/Carrito/factura_correo.php");
                 $id_Usuario = $_SESSION['id'];
 
+                // Tomar los datos del detalle carrito.
                 $sql = "SELECT Pro.Pro_Id, Pro.Pro_Nombre, Pro.Pro_Descripcion, Pro.Pro_Precio ,Pro.Pro_Imagen, Car_Det.Car_Det_Id, Car_Det.Car_Det_Cantidad, Car_Det.Car_Det_Total FROM Producto Pro, Carrito_Detalle Car_Det, Carrito Car WHERE Pro.Pro_Id = Car_Det.Pro_Id AND Car_Det.Car_Id = Car.Car_Id AND Car.Usu_Id = $id_Usuario ORDER BY Car_Det.Car_Det_Id DESC";
-
                 $productos = $obj->consult($sql);
-                print_r($productos);
-                echo "<br>";
-                var_dump($productos);
-                echo " ";
-                echo "HOla desmayo";
-                echo mysqli_num_rows($productos);
                 $variables['productos'] = $productos;
 
+                // Tomar los datos del carrito, su Valor Total.
                 $sql = "SELECT Car_Id, Car_Total FROM Carrito WHERE Usu_Id = $id_Usuario";
                 $carrito = $obj->consult($sql);
                 $variables['carrito'] = $carrito;
 
-                $variables['direccion_envio'] = $direccion;
 
                 $variables['id_usuario'] = $_SESSION['id'];
                 $variables['nombre'] = $_SESSION['nombre'];
@@ -214,13 +219,11 @@
                         $contenido = str_replace('{{ '.$key.' }}', $value, $contenido);
                     }
                 }
-                // $headers = "from: sender\'s email";
-                
                 // Para enviar un correo HTML, debe establecerse la cabecera Content-type
-                $titulo_Email = "Factura de compra - 20 SR. " . $variables['nombre'] . " " . $variables['apellido'];
+                $titulo_Email = "Factura de compra - 26 SR. " . $variables['nombre'] . " " . $variables['apellido'];
                 $headers  = 'MIME-Version: 1.0' . "\r\n";
                 $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-    
+
                 if (mail($correo, $titulo_Email, $contenido, $headers)) {
                     // mail($correo, "Contacto", $contenido, $headers);
                     echo "Successfully!";
