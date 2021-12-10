@@ -29,12 +29,11 @@
             $cat = $_POST['cat'];
             $col = $_POST['col'];
             $prv = $_POST['prv'];
-            $des = $_POST['des'];
             
-            if (($cat == 0) AND ($col == 0) AND ($prv == 0) AND ($des == 0)) {
+            if (($cat == 0) AND ($col == 0) AND ($prv == 0)) {
                 $sql = "SELECT Pro.Pro_Id,Pro.Pro_Nombre,Pro.Pro_Cantidad,Pro.Pro_Precio,Pro.Pro_Imagen,Pro.Pro_Descuento,Pro.Col_Id,Pro.Cat_Id,Col.Col_Id,Col.Col_Nombre,Cat.Cat_Id,Cat.Cat_Nombre FROM Producto Pro, Color Col, Categoria_Pro Cat WHERE Pro.Col_Id = Col.Col_Id AND Pro.Cat_Id = Cat.Cat_Id ORDER BY Cat.Cat_Nombre, Pro.Pro_Nombre";
             } else {
-                $sql = "SELECT Pro.Pro_Id,Pro.Pro_Nombre,Pro.Pro_Cantidad,Pro.Pro_Precio,Pro.Pro_Imagen,Pro.Pro_Descuento,Pro.Col_Id,Pro.Cat_Id,Col.Col_Id, Col.Col_Nombre, Cat.Cat_Id, Cat.Cat_Nombre FROM Producto Pro, Color Col, Categoria_Pro Cat WHERE Pro.Col_Id = Col.Col_Id AND Pro.Cat_Id = Cat.Cat_Id AND Pro.Cat_Id = $cat AND Pro.Prov_Id = $prv AND Pro.Col_Id = $col AND Pro.Pro_Descuento = $des ORDER BY Cat.Cat_Nombre, Pro.Pro_Nombre";
+                $sql = "SELECT Pro.Pro_Id,Pro.Pro_Nombre,Pro.Pro_Cantidad,Pro.Pro_Precio,Pro.Pro_Imagen,Pro.Pro_Descuento,Pro.Col_Id,Pro.Cat_Id,Col.Col_Id, Col.Col_Nombre, Cat.Cat_Id, Cat.Cat_Nombre FROM Producto Pro, Color Col, Categoria_Pro Cat WHERE Pro.Col_Id = Col.Col_Id AND Pro.Cat_Id = Cat.Cat_Id AND Pro.Cat_Id = $cat AND Pro.Prov_Id = $prv AND Pro.Col_Id = $col ORDER BY Cat.Cat_Nombre, Pro.Pro_Nombre";
             }
 
             $productos = $obj->consult($sql);
