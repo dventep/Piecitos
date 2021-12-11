@@ -131,10 +131,16 @@
         }
         public function metodoPago() {  
             $obj = new CarritoModel();
-            $sql = "SELECT * FROM Metodo_Pago";
-            $metodosPago = $obj->consult($sql);
+            $Usuario = $_SESSION['id'];
+            $sql = "SELECT Car_Det.Car_Det_Total FROM Producto Pro, Carrito_Detalle Car_Det, Carrito Car WHERE Pro.Pro_Id = Car_Det.Pro_Id AND Car_Det.Car_Id = Car.Car_Id AND Car.Usu_Id = $Usuario ORDER BY Car_Det.Car_Det_Id DESC";
+            $productos = $obj->consult($sql);
 
-            include_once '../view/Carrito/metodoPago.php';
+            if (mysqli_fetch_row($productos) > 0) {
+                $sql = "SELECT * FROM Metodo_Pago";
+                $metodosPago = $obj->consult($sql);
+
+                include_once '../view/Carrito/metodoPago.php';
+            }
         }
         public function generarFactura() {
             $obj= new CarritoModel();
@@ -144,7 +150,7 @@
                 // Tomar la Zona Horaria y Enviarle los datos que necesito traer.
                 $dtz = new DateTimeZone("America/Bogota");
                 $dt = new DateTime("now", $dtz);
-                $currentTime = $dt->format('D, j/M/Y');                
+                $currentTime = $dt->format('D, j/M/Y');          
                 $variables['fecha_actual'] = $currentTime;
                 
                 // Tomar Los datos del POST
@@ -164,107 +170,117 @@
                 $id_Usuario = $_SESSION['id'];
 
                 // Tomar los datos del detalle carrito.
-                $sql = "SELECT Pro.Pro_Id, Pro.Pro_Nombre, Pro.Pro_Descripcion, Pro.Pro_Precio ,Pro.Pro_Imagen, Car_Det.Car_Det_Id, Car_Det.Car_Det_Cantidad, Car_Det.Car_Det_Total FROM Producto Pro, Carrito_Detalle Car_Det, Carrito Car WHERE Pro.Pro_Id = Car_Det.Pro_Id AND Car_Det.Car_Id = Car.Car_Id AND Car.Usu_Id = $id_Usuario ORDER BY Car_Det.Car_Det_Id DESC";
+                $sql = "SELECT Pro.Pro_Id, Pro.Pro_Nombre, Pro.Pro_Cantidad, Pro.Pro_Descripcion, Pro.Pro_Precio ,Pro.Pro_Imagen, Car_Det.Car_Det_Id, Car_Det.Car_Det_Cantidad, Car_Det.Car_Det_Total FROM Producto Pro, Carrito_Detalle Car_Det, Carrito Car WHERE Pro.Pro_Id = Car_Det.Pro_Id AND Car_Det.Car_Id = Car.Car_Id AND Car.Usu_Id = $id_Usuario ORDER BY Car_Det.Car_Det_Id DESC";
                 $productos = $obj->consult($sql);
-                $variables['productos'] = $productos;
-
-                // Tomar los datos del carrito, su Valor Total.
-                $sql = "SELECT Car_Id, Car_Total, Usu_Id FROM Carrito WHERE Usu_Id = $id_Usuario";
-                $carrito = $obj->consult($sql);
-                $variables['carrito'] = $carrito;
-
-
-                $variables['id_usuario'] = $_SESSION['id'];
-                $variables['nombre'] = $_SESSION['nombre'];
-                $variables['apellido'] = $_SESSION['apellido'];
-                $variables['telefono'] = $_SESSION['telefono'];
-                $variables['numero_id'] = $_SESSION['numero_id'];
-                $variables['correo'] = $_SESSION['correo'];
-
-                // Obtener el Nuevo Número del ID de Factura
-                $Fac_Id = $obj->autoincrement("Factura","Fac_Id");
-                $variables['Id_fact'] = $Fac_Id;
-                foreach($variables as $key => $value)
-                {
-                    if (strval('{{'.$key.'}}')== '{{productos}}') {
-                        $contador = 0;
-                        foreach ($productos as $producto) {
-                            $contador += 1;
-
-                            $fila = '
-                                <tr class="detalles_compra">
-                                    <td class="numero_Compra">'.number_format($producto['Pro_Id']).'</td>
-                                    <td class="descripcion_Compra">
-                                        <span class="titulo_Producto">'.$producto['Pro_Nombre'].'</span>'.$producto['Pro_Descripcion'].'
-                                    </td>
-                                    <td class="precio_Compra">$'.number_format($producto['Pro_Precio']).'</td>
-                                    <td class="cantidad_Compra">'.number_format($producto['Car_Det_Cantidad']).'</td>
-                                    <td class="total_unidad_Compra">$'.number_format($producto['Car_Det_Total']).'</td>
-                                </tr>
-                                
-                            ';
-                            $cantidad = mysqli_num_rows($productos);
-                            if ($contador == $cantidad) {
-                                $contenido = str_replace('{{ fila }}', $fila, $contenido);
-                            } else {
-                                $contenido = str_replace('{{ fila }}', $fila.'{{ fila }}', $contenido);
-                            }
-                            
-                        }
-                    } else if (strval('{{'.$key.'}}') == '{{carrito}}') {
-                        
-                        foreach ($carrito as $car) {
-                            $fila = number_format($car['Car_Total']);
-                            $car_id = $car['Car_Id'];
-
-                            $contenido = str_replace('{{ carrito }}', $fila, $contenido);
-                        }
-                    } else {
-                        $contenido = str_replace('{{ '.$key.' }}', $value, $contenido);
+                $errors_Products = array();
+                foreach ($productos as $pro) {
+                    if ($pro['Car_Det_Cantidad'] > $pro['Pro_Cantidad']) {
+                        array_push($errors_Products, "No contamos con la cantidad que necesitas del producto ".$pro['Pro_Nombre']."; tenemos ".$pro['Pro_Cantidad']." unidades.");
+                        echo "<br> Error Cantidades: ".$errors_Products;
                     }
                 }
-                // Para enviar un correo HTML, debe establecerse la cabecera Content-type
-                $titulo_Email = "Factura de compra - 28 SR. " . $variables['nombre'] . " " . $variables['apellido'];
-                $headers  = 'MIME-Version: 1.0' . "\r\n";
-                $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+                if (count($errors_Products) == 0) {
+                    $variables['productos'] = $productos;
 
-                if (mail($correo, $titulo_Email, $contenido, $headers)) {
-                    // mail($correo, "Contacto", $contenido, $headers);
-                    echo "Successfully!";
-                } else {
-                    echo "Mailer Error: ".error_get_last();
-                }
-                
-                // $sql = "SELECT Car_Id, Car_Total, Usu_Id FROM Carrito WHERE Usu_Id = $Usuario";
-                // $carrito = $obj->consult($sql);
-                foreach ($carrito as $car) {
-                    echo "<br>";
-                    print_r($car);
-                    $dt = new DateTime("now", $dtz);
-                    // $date = $dt->format("HH:MM:II");
-                    $date = $dt->format('Y-m-d H:i:s');
-                    echo "<br>date: ".$date ;
-                    $usu_id = $car['Usu_Id'];
-                    $car_total = $car['Car_Total'];
-                    $sql = "INSERT INTO Factura VALUES($Fac_Id, '$date', $car_total, $usu_id, $metodo_pago);";
-                    $factura = $obj->insert($sql);
-                    echo "<br>Factura: ".$factura;
-                }
-                foreach ($productos as $pro) {
-                    $Fac_Det_Id = $obj->autoincrement("Factura_Detalle","Fac_Det_Id");
-                    $Car_Det_Id = $pro['Car_Det_Id'];
-                    $Car_Det_Cantidad = $pro['Car_Det_Cantidad'];
-                    $Car_Det_Total = $pro['Car_Det_Total'];
-                    $Pro_Id = $pro['Pro_Id'];
-                    $sql = "INSERT INTO Factura_Detalle VALUES($Fac_Det_Id, $Car_Det_Cantidad, $Car_Det_Total, $Pro_Id, $Fac_Id);";
-                    $factura_detalle = $obj->insert($sql);
-                    $sql = "DELETE FROM Carrito_Detalle WHERE Car_Det_Id = $Car_Det_Id;";
-                    $delete_Car_Det = $obj->delete($sql);                   
+                    // Tomar los datos del carrito, su Valor Total.
+                    $sql = "SELECT Car_Id, Car_Total, Usu_Id FROM Carrito WHERE Usu_Id = $id_Usuario";
+                    $carrito = $obj->consult($sql);
+                    $variables['carrito'] = $carrito;
 
+
+                    $variables['id_usuario'] = $_SESSION['id'];
+                    $variables['nombre'] = $_SESSION['nombre'];
+                    $variables['apellido'] = $_SESSION['apellido'];
+                    $variables['telefono'] = $_SESSION['telefono'];
+                    $variables['numero_id'] = $_SESSION['numero_id'];
+                    $variables['correo'] = $_SESSION['correo'];
+
+                    // Obtener el Nuevo Número del ID de Factura
+                    $Fac_Id = $obj->autoincrement("Factura","Fac_Id");
+                    $variables['Id_fact'] = $Fac_Id;
+                    foreach($variables as $key => $value)
+                    {
+                        if (strval('{{'.$key.'}}')== '{{productos}}') {
+                            $contador = 0;
+                            foreach ($productos as $producto) {
+                                $contador += 1;
+
+                                $fila = '
+                                    <tr class="detalles_compra">
+                                        <td class="numero_Compra">'.number_format($producto['Pro_Id']).'</td>
+                                        <td class="descripcion_Compra">
+                                            <span class="titulo_Producto">'.$producto['Pro_Nombre'].'</span>'.$producto['Pro_Descripcion'].'
+                                        </td>
+                                        <td class="precio_Compra">$'.number_format($producto['Pro_Precio']).'</td>
+                                        <td class="cantidad_Compra">'.number_format($producto['Car_Det_Cantidad']).'</td>
+                                        <td class="total_unidad_Compra">$'.number_format($producto['Car_Det_Total']).'</td>
+                                    </tr>
+                                    
+                                ';
+                                $cantidad = mysqli_num_rows($productos);
+                                if ($contador == $cantidad) {
+                                    $contenido = str_replace('{{ fila }}', $fila, $contenido);
+                                } else {
+                                    $contenido = str_replace('{{ fila }}', $fila.'{{ fila }}', $contenido);
+                                }
+                                
+                            }
+                        } else if (strval('{{'.$key.'}}') == '{{carrito}}') {
+                            
+                            foreach ($carrito as $car) {
+                                $fila = number_format($car['Car_Total']);
+                                $car_id = $car['Car_Id'];
+
+                                $contenido = str_replace('{{ carrito }}', $fila, $contenido);
+                            }
+                        } else {
+                            $contenido = str_replace('{{ '.$key.' }}', $value, $contenido);
+                        }
+                    }
+                    // Para enviar un correo HTML, debe establecerse la cabecera Content-type
+                    $titulo_Email = "Factura de compra - 28 SR. " . $variables['nombre'] . " " . $variables['apellido'];
+                    $headers  = 'MIME-Version: 1.0' . "\r\n";
+                    $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+
+                    if (mail($correo, $titulo_Email, $contenido, $headers)) {
+                        // mail($correo, "Contacto", $contenido, $headers);
+                        echo "Successfully!";
+                    } else {
+                        echo "Mailer Error: ".error_get_last();
+                    }
+                    
+                    // $sql = "SELECT Car_Id, Car_Total, Usu_Id FROM Carrito WHERE Usu_Id = $Usuario";
+                    // $carrito = $obj->consult($sql);
+                    foreach ($carrito as $car) {
+                        echo "<br>";
+                        print_r($car);
+                        $dt = new DateTime("now", $dtz);
+                        // $date = $dt->format("HH:MM:II");
+                        $date = $dt->format('Y-m-d H:i:s');
+                        echo "<br>date: ".$date ;
+                        $usu_id = $car['Usu_Id'];
+                        $car_total = $car['Car_Total'];
+                        $sql = "INSERT INTO Factura VALUES($Fac_Id, '$date', $car_total, $usu_id, $metodo_pago);";
+                        $factura = $obj->insert($sql);
+                        echo "<br>Factura: ".$factura;
+                    }
+                    foreach ($productos as $pro) {
+                        $Fac_Det_Id = $obj->autoincrement("Factura_Detalle","Fac_Det_Id");
+                        $Car_Det_Id = $pro['Car_Det_Id'];
+                        $Car_Det_Cantidad = $pro['Car_Det_Cantidad'];
+                        $Car_Det_Total = $pro['Car_Det_Total'];
+                        $Pro_Id = $pro['Pro_Id'];
+                        $sql = "INSERT INTO Factura_Detalle VALUES($Fac_Det_Id, $Car_Det_Cantidad, $Car_Det_Total, $Pro_Id, $Fac_Id);";
+                        $factura_detalle = $obj->insert($sql);
+                        $sql = "DELETE FROM Carrito_Detalle WHERE Car_Det_Id = $Car_Det_Id;";
+                        $delete_Car_Det = $obj->delete($sql);                   
+
+                    }
+                    echo "<br>car_id: ".$car_id;
+                    $sql = "DELETE FROM Carrito WHERE Car_Id = $car_id";
+                    $delete_Car = $obj->delete($sql);
+                    
                 }
-                echo "<br>car_id: ".$car_id;
-                $sql = "DELETE FROM Carrito WHERE Car_Id = $car_id";
-                $delete_Car = $obj->delete($sql);
 
             }
 

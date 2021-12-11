@@ -9,6 +9,31 @@
         public function registrar() {
             include_once '../view/Acceso/registrar.php';
         }
+        public function signup() {
+            $obj = new AccesoModel();
+
+            $user = $_POST['usuario_input'];
+            $correo = $_POST['correo_input'];
+            $clave = $_POST['contraseña_input'];
+            $confirm_clave = $_POST['confirmar_input'];
+            
+            if ($clave == $confirm_clave) {
+                $id = $obj->autoincrement("Usuario","Usu_Id");
+                $sql = "INSERT INTO Usuario VALUES ($id,'$user','$correo','$clave')";
+
+                $ejecutar = $obj->insert($sql);
+
+                if ($ejecutar) {
+                    redirect(getUrl("Acceso","Acceso","registrar"));
+                } else {
+                    echo "Ha ocurrido un error al registrarte";
+                    echo "<a href='".getUrl("Acceso","Acceso","registrar")."'>Volver a Registrarme</a>";
+                }
+            } else {
+                $_SESSION['error'] = "Las contraseñas deben ser iguales.";
+                redirect(getUrl("Acceso","Acceso","registrar"));
+            }
+        }
         public function login() {
             $obj = new AccesoModel();
 

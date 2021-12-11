@@ -19,29 +19,39 @@
           <div class="card-body p-4 p-sm-5">
             <h2 class="card-title text-center mb-5 fw-light font-weight-bold">¡Regístrate!</h2>
             
-            <form>
+            <form action="<?php echo getUrl("Acceso","Acceso","signup",false,"ajax") ?>" method="post">
 
               <div class="form-floating mb-3">
                 <label for="usuario_input">Nombre Usuario</label>
-                <input type="text" class="form-control" id="usuario_input" placeholder="Nombre de Usuario" autofocus>
+                <input type="text" class="form-control" id="usuario_input" name="usuario_input" placeholder="Nombre de Usuario" autofocus required>
               </div>
 
               <div class="form-floating mb-3">
                 <label for="correo_input">Correo Electrónico</label>
-                <input type="email" class="form-control" id="correo_input" placeholder="luis@cacharreo.com">
+                <input type="email" class="form-control" id="correo_input" name="correo_input" placeholder="luis@cacharreo.com" required>
               </div>
 
               <hr>
 
               <div class="form-floating mb-3">
                 <label for="contraseña_input">Contraseña</label>
-                <input type="password" class="form-control" id="contraseña_input" placeholder="Contraseña">
+                <input type="password" class="form-control" id="contraseña_input" name="contraseña_input" placeholder="Contraseña" required>
               </div>
 
               <div class="form-floating mb-3">
                 <label for="confirmar_input">Confirmar Contraseña</label>
-                <input type="password" class="form-control" id="confirmar_input" placeholder="Confirmar Contraseña">
+                <input type="password" class="form-control" id="confirmar_input" name="confirmar_input" placeholder="Confirmar Contraseña" required>
               </div>
+              <?php
+                if (isset($_SESSION['error'])) {
+              ?>
+                  <div class="alert alert-danger" role="alert">
+                    <?php echo $_SESSION['error']; ?>  
+                  </div>
+              <?php
+                unset($_SESSION['error']);
+                }
+              ?>
 
               <hr>
 
@@ -49,21 +59,7 @@
                 <button class="btn btn-lg text-light btn-login fw-bold text-uppercase col-md-12" style="background:#6d6d41" type="submit">Registrarme</button>
               </div>
 
-              <a class="d-block text-center mt-2 small" style="color:#904b26" href="#">¿Tienes una cuenta? Inicia sesión</a>
-
-              <hr class="my-4">
-
-              <div class="d-grid mb-2">
-                <button class="btn btn-lg btn-danger btn-login fw-bold text-uppercase col-md-12" type="submit">
-                  <i class="fab fa-google me-2"></i> Registrarme con Google
-                </button>
-              </div>
-
-              <div class="d-grid">
-                <button class="btn btn-lg btn-primary btn-login fw-bold text-uppercase col-md-12" type="submit">
-                  <i class="fab fa-facebook-f me-2"></i> Registrarme con Facebook
-                </button>
-              </div>
+              <a class="d-block text-center mt-2 small" style="color:#904b26" href="<?php echo getUrl("Acceso","Acceso","iniciar"); ?>">¿Tienes una cuenta? Inicia sesión</a>
 
             </form>
           </div>

@@ -38,12 +38,6 @@
                   unset($_SESSION['error']);
                   }
                 ?>
-                <div class="form-check mb-3">
-                  <input class="form-check-input" type="checkbox" value="" id="recordar_contraseña">
-                  <label class="form-check-label" for="recordar_contraseña">
-                    Recordarme la contraseña
-                  </label>
-                </div>
 
                 <div class="d-grid">
                   <div class="row">

@@ -19,7 +19,7 @@
             <!-- Cada Tarjeta donde aparece cada Estadística Unificada "Números"  -->
             <?php
 
-            if (mysqli_fetch_row($productos) > 0) {
+            if (mysqli_num_rows($productos) > 0) {
                 foreach ($productos as $pro) {
             ?>
                 <tr id="trProducts<?php echo $pro['Car_Det_Id']; ?>">
@@ -51,8 +51,14 @@
             </tr>
             </tbody>
         </table>
-        
-        <button id="btnComprar" class="btn" data-url="<?php echo getUrl("Carrito", "Carrito", "metodoPago", false, "ajax"); ?>">Comprar</button>
+        <?php
+            if (mysqli_num_rows($productos) > 0) {
+
+        ?>
+            <button id="btnComprar" class="btn" data-url="<?php echo getUrl("Carrito", "Carrito", "metodoPago", false, "ajax"); ?>">Comprar</button>
             <div id="metodoPagoContainer"></div>
+        <?php 
+            }
+        ?>
     </div>
 </div>
