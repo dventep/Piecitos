@@ -3,11 +3,7 @@
 
     if ((isset($_SESSION['id'])) AND ($_SESSION['rol_id'] > 1)) {
 
-        class AdminController {
-            public function vista() {
-                include_once '../view/Admin/Administracion.php';
-            }     
-            
+        class AdminController {            
             public function cantNotificaciones() {
                 $obj = new AdminModel;
 

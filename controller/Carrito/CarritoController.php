@@ -25,7 +25,6 @@
             $sql = "SELECT Pro.Pro_Id,Pro.Pro_Nombre,Pro.Pro_Cantidad,Pro.Pro_Precio,Pro.Pro_Descripcion, Pro.Pro_Imagen,Pro.Pro_Descuento,Pro.Col_Id,Pro.Cat_Id, Pro.Prov_id, Col.Col_Id,Col.Col_Nombre,Cat.Cat_Id,Cat.Cat_Nombre,Prov.Prov_Id, Prov.Prov_Nombre FROM Producto Pro, Color Col, Categoria_Pro Cat, Proveedor Prov WHERE Pro.Col_Id = Col.Col_Id AND Pro.Cat_Id = Cat.Cat_Id AND Pro.Prov_Id = Prov.Prov_Id AND Pro.Pro_Id = $id ORDER BY Cat.Cat_Nombre, Pro.Pro_Nombre";
 
             $producto = $obj->consult($sql);
-
             include_once '../view/Carrito/verMasModal.php';
         }
 
@@ -164,8 +163,6 @@
                     $variables['metodo'] = $metodo['Met_Pag_Nombre'];
                 }
                 
-                $correo = "davidventepolo@gmail.com";
-                echo "Correo: " . $_SESSION['correo']."<br>";
                 $contenido =  file_get_contents("../view/Carrito/factura_correo.php");
                 $id_Usuario = $_SESSION['id'];
 
@@ -176,7 +173,6 @@
                 foreach ($productos as $pro) {
                     if ($pro['Car_Det_Cantidad'] > $pro['Pro_Cantidad']) {
                         array_push($errors_Products, "No contamos con la cantidad que necesitas del producto ".$pro['Pro_Nombre']."; tenemos ".$pro['Pro_Cantidad']." unidades.");
-                        echo "<br> Error Cantidades: ".$errors_Products;
                     }
                 }
                 if (count($errors_Products) == 0) {
@@ -238,45 +234,43 @@
                         }
                     }
                     // Para enviar un correo HTML, debe establecerse la cabecera Content-type
-                    $titulo_Email = "Factura de compra - 28 SR. " . $variables['nombre'] . " " . $variables['apellido'];
+                    $titulo_Email = "Factura de compra N° $Fac_Id - Sr. " . $variables['nombre'] . " " . $variables['apellido'];
                     $headers  = 'MIME-Version: 1.0' . "\r\n";
                     $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 
-                    if (mail($correo, $titulo_Email, $contenido, $headers)) {
-                        // mail($correo, "Contacto", $contenido, $headers);
-                        echo "Successfully!";
+                    if (mail($_SESSION['correo'], $titulo_Email, $contenido, $headers)) {
                     } else {
                         echo "Mailer Error: ".error_get_last();
                     }
                     
-                    // $sql = "SELECT Car_Id, Car_Total, Usu_Id FROM Carrito WHERE Usu_Id = $Usuario";
-                    // $carrito = $obj->consult($sql);
                     foreach ($carrito as $car) {
-                        echo "<br>";
-                        print_r($car);
                         $dt = new DateTime("now", $dtz);
-                        // $date = $dt->format("HH:MM:II");
                         $date = $dt->format('Y-m-d H:i:s');
-                        echo "<br>date: ".$date ;
                         $usu_id = $car['Usu_Id'];
                         $car_total = $car['Car_Total'];
                         $sql = "INSERT INTO Factura VALUES($Fac_Id, '$date', $car_total, $usu_id, $metodo_pago);";
                         $factura = $obj->insert($sql);
-                        echo "<br>Factura: ".$factura;
                     }
+
                     foreach ($productos as $pro) {
+                        $Nueva_Cantidad = $pro['Pro_Cantidad'] - $pro['Car_Det_Cantidad'];
+                        $Pro_Id = $pro['Pro_Id'];
+                        // echo "UPDATE Producto Set Pro_Cantidad = $Nueva_Cantidad WHERE Pro_Id = $Pro_Id";
+                        $sql = "UPDATE Producto Set Pro_Cantidad = $Nueva_Cantidad WHERE Pro_Id = $Pro_Id";
+                        $update_cantidad = $obj->update($sql);
+
                         $Fac_Det_Id = $obj->autoincrement("Factura_Detalle","Fac_Det_Id");
                         $Car_Det_Id = $pro['Car_Det_Id'];
                         $Car_Det_Cantidad = $pro['Car_Det_Cantidad'];
                         $Car_Det_Total = $pro['Car_Det_Total'];
                         $Pro_Id = $pro['Pro_Id'];
+
                         $sql = "INSERT INTO Factura_Detalle VALUES($Fac_Det_Id, $Car_Det_Cantidad, $Car_Det_Total, $Pro_Id, $Fac_Id);";
                         $factura_detalle = $obj->insert($sql);
                         $sql = "DELETE FROM Carrito_Detalle WHERE Car_Det_Id = $Car_Det_Id;";
-                        $delete_Car_Det = $obj->delete($sql);                   
+                        $delete_Car_Det = $obj->delete($sql);
 
                     }
-                    echo "<br>car_id: ".$car_id;
                     $sql = "DELETE FROM Carrito WHERE Car_Id = $car_id";
                     $delete_Car = $obj->delete($sql);
                     
@@ -284,8 +278,8 @@
 
             }
 
-            
-            include_once '../view/Carrito/factura.php';
+            $compra_hecha = True;
+            include_once '../view/Carrito/consultarAñadidos.php';
         }
         
     }

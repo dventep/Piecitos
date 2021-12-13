@@ -2,6 +2,15 @@
     <link href="css_inicio/consultarAñadidos.css" rel="stylesheet" />
 
 <div class="containerAñadidos">
+    <?php if (isset($compra_hecha) and $compra_hecha == True) { ?>
+        <div class="div-Añadidos pt-4 my-4">
+            <h1 class="h3 mb-1" style="color:#505050">Gracias por elegirnos.<br>Se ha realizado tu compra satisfactoriamente.</h1>
+            <h3 class="h4 mb-4 px-5 rounded-bottom py-1 px-5" style="color:#505050; background-color:#cb997e;">Te llegará la factura a tu correo registrado en pocos minutos.</h3>
+            <a class="btn btn-info text-center text-light btn-lg" href="<?php echo getUrl("Tienda", "Tienda", "catalogo"); ?>">Quiero continuar comprando</a>
+        </div>
+    <?php 
+    // $compra_hecha = false;
+    } else { ?>
     <div class="div-Añadidos my-4">
         <h1 class="h3 mb-0" style="color:#505050">Lista de Productos</h1>
     </div>
@@ -18,7 +27,6 @@
             <tbody id="tbody">
             <!-- Cada Tarjeta donde aparece cada Estadística Unificada "Números"  -->
             <?php
-
             if (mysqli_num_rows($productos) > 0) {
                 foreach ($productos as $pro) {
             ?>
@@ -61,4 +69,5 @@
             }
         ?>
     </div>
+    <?php } ?>
 </div>

@@ -5,7 +5,7 @@
         public function catalogo() {
             $obj = new TiendaModel();
 
-            $sql = "SELECT Pro.Pro_Id,Pro.Pro_Nombre,Pro.Pro_Cantidad,Pro.Pro_Precio,Pro.Pro_Imagen,Pro.Pro_Descuento,Pro.Col_Id,Pro.Cat_Id,Col.Col_Id,Col.Col_Nombre,Cat.Cat_Id,Cat.Cat_Nombre FROM Producto Pro, Color Col, Categoria_Pro Cat WHERE Pro.Col_Id = Col.Col_Id AND Pro.Cat_Id = Cat.Cat_Id ORDER BY Cat.Cat_Nombre, Pro.Pro_Nombre";
+            $sql = "SELECT Pro.Pro_Id,Pro.Pro_Nombre,Pro.Pro_Cantidad,Pro.Pro_Precio,Pro.Pro_Imagen,Pro.Pro_Descuento,Pro.Col_Id,Pro.Cat_Id,Col.Col_Id,Col.Col_Nombre,Cat.Cat_Id,Cat.Cat_Nombre FROM Producto Pro, Color Col, Categoria_Pro Cat WHERE Pro.Col_Id = Col.Col_Id AND Pro.Cat_Id = Cat.Cat_Id AND Pro.Pro_Cantidad > 0 ORDER BY Cat.Cat_Nombre, Pro.Pro_Nombre";
             $productos = $obj->consult($sql);
 
             $sql = "SELECT Cat_Id, Cat_Nombre FROM Categoria_Pro";
@@ -31,9 +31,9 @@
             $prv = $_POST['prv'];
             
             if (($cat == 0) AND ($col == 0) AND ($prv == 0)) {
-                $sql = "SELECT Pro.Pro_Id,Pro.Pro_Nombre,Pro.Pro_Cantidad,Pro.Pro_Precio,Pro.Pro_Imagen,Pro.Pro_Descuento,Pro.Col_Id,Pro.Cat_Id,Col.Col_Id,Col.Col_Nombre,Cat.Cat_Id,Cat.Cat_Nombre FROM Producto Pro, Color Col, Categoria_Pro Cat WHERE Pro.Col_Id = Col.Col_Id AND Pro.Cat_Id = Cat.Cat_Id ORDER BY Cat.Cat_Nombre, Pro.Pro_Nombre";
+                $sql = "SELECT Pro.Pro_Id,Pro.Pro_Nombre,Pro.Pro_Cantidad,Pro.Pro_Precio,Pro.Pro_Imagen,Pro.Pro_Descuento,Pro.Col_Id,Pro.Cat_Id,Col.Col_Id,Col.Col_Nombre,Cat.Cat_Id,Cat.Cat_Nombre FROM Producto Pro, Color Col, Categoria_Pro Cat WHERE Pro.Col_Id = Col.Col_Id AND Pro.Cat_Id = Cat.Cat_Id AND Pro.Pro_Cantidad > 0 ORDER BY Cat.Cat_Nombre, Pro.Pro_Nombre";
             } else {
-                $sql = "SELECT Pro.Pro_Id,Pro.Pro_Nombre,Pro.Pro_Cantidad,Pro.Pro_Precio,Pro.Pro_Imagen,Pro.Pro_Descuento,Pro.Col_Id,Pro.Cat_Id,Col.Col_Id, Col.Col_Nombre, Cat.Cat_Id, Cat.Cat_Nombre FROM Producto Pro, Color Col, Categoria_Pro Cat WHERE Pro.Col_Id = Col.Col_Id AND Pro.Cat_Id = Cat.Cat_Id AND Pro.Cat_Id = $cat AND Pro.Prov_Id = $prv AND Pro.Col_Id = $col ORDER BY Cat.Cat_Nombre, Pro.Pro_Nombre";
+                $sql = "SELECT Pro.Pro_Id,Pro.Pro_Nombre,Pro.Pro_Cantidad,Pro.Pro_Precio,Pro.Pro_Imagen,Pro.Pro_Descuento,Pro.Col_Id,Pro.Cat_Id,Col.Col_Id, Col.Col_Nombre, Cat.Cat_Id, Cat.Cat_Nombre FROM Producto Pro, Color Col, Categoria_Pro Cat WHERE Pro.Col_Id = Col.Col_Id AND Pro.Cat_Id = Cat.Cat_Id AND Pro.Cat_Id = $cat AND Pro.Prov_Id = $prv AND Pro.Col_Id = $col AND Pro.Pro_Cantidad > 0 ORDER BY Cat.Cat_Nombre, Pro.Pro_Nombre";
             }
 
             $productos = $obj->consult($sql);
@@ -48,9 +48,9 @@
             $id = $_POST['id'];
             
             if ($id == 0) {
-                $sql = "SELECT Pro.Pro_Id,Pro.Pro_Nombre,Pro.Pro_Cantidad,Pro.Pro_Precio,Pro.Pro_Imagen,Pro.Pro_Descuento,Pro.Col_Id,Pro.Cat_Id,Col.Col_Id,Col.Col_Nombre,Cat.Cat_Id,Cat.Cat_Nombre FROM Producto Pro, Color Col, Categoria_Pro Cat WHERE Pro.Col_Id = Col.Col_Id AND Pro.Cat_Id = Cat.Cat_Id ORDER BY Cat.Cat_Nombre, Pro.Pro_Nombre";
+                $sql = "SELECT Pro.Pro_Id,Pro.Pro_Nombre,Pro.Pro_Cantidad,Pro.Pro_Precio,Pro.Pro_Imagen,Pro.Pro_Descuento,Pro.Col_Id,Pro.Cat_Id,Col.Col_Id,Col.Col_Nombre,Cat.Cat_Id,Cat.Cat_Nombre FROM Producto Pro, Color Col, Categoria_Pro Cat WHERE Pro.Col_Id = Col.Col_Id AND Pro.Cat_Id = Cat.Cat_Id AND Pro.Pro_Cantidad > 0 ORDER BY Cat.Cat_Nombre, Pro.Pro_Nombre";
             } else {
-                $sql = "SELECT Pro.Pro_Id,Pro.Pro_Nombre,Pro.Pro_Cantidad,Pro.Pro_Precio,Pro.Pro_Imagen,Pro.Pro_Descuento,Pro.Col_Id,Pro.Cat_Id,Col.Col_Id, Col.Col_Nombre, Cat.Cat_Id, Cat.Cat_Nombre FROM Producto Pro, Color Col, Categoria_Pro Cat WHERE Pro.Col_Id = Col.Col_Id AND Pro.Cat_Id = Cat.Cat_Id AND Pro.Cat_Id = $id ORDER BY Cat.Cat_Nombre, Pro.Pro_Nombre";
+                $sql = "SELECT Pro.Pro_Id,Pro.Pro_Nombre,Pro.Pro_Cantidad,Pro.Pro_Precio,Pro.Pro_Imagen,Pro.Pro_Descuento,Pro.Col_Id,Pro.Cat_Id,Col.Col_Id, Col.Col_Nombre, Cat.Cat_Id, Cat.Cat_Nombre FROM Producto Pro, Color Col, Categoria_Pro Cat WHERE Pro.Col_Id = Col.Col_Id AND Pro.Cat_Id = Cat.Cat_Id AND Pro.Cat_Id = $id AND Pro.Pro_Cantidad > 0 ORDER BY Cat.Cat_Nombre, Pro.Pro_Nombre";
             }
             $productos = $obj->consult($sql);
 
@@ -63,7 +63,7 @@
 
             $buscar = $_POST['buscar'];
 
-            $sql = "SELECT Pro.Pro_Id,Pro.Pro_Nombre,Pro.Pro_Cantidad,Pro.Pro_Precio,Pro.Pro_Imagen,Pro.Pro_Descuento,Pro.Col_Id,Pro.Cat_Id,Col.Col_Id,Col.Col_Nombre,Cat.Cat_Id,Cat.Cat_Nombre FROM Producto Pro, Color Col, Categoria_Pro Cat WHERE Pro.Col_Id = Col.Col_Id AND Pro.Cat_Id = Cat.Cat_Id AND (Pro.Pro_Id LIKE '%$buscar%' OR Pro.Pro_Nombre LIKE '%$buscar%' OR Pro.Pro_Cantidad LIKE '%$buscar%' OR Pro.Pro_Precio LIKE '%$buscar%' OR Pro.Pro_Descuento LIKE '%$buscar%' OR Col.Col_Nombre LIKE '%$buscar%' OR Cat.Cat_Nombre LIKE '%$buscar%') ORDER BY Cat.Cat_Nombre, Pro.Pro_Nombre";
+            $sql = "SELECT Pro.Pro_Id,Pro.Pro_Nombre,Pro.Pro_Cantidad,Pro.Pro_Precio,Pro.Pro_Imagen,Pro.Pro_Descuento,Pro.Col_Id,Pro.Cat_Id,Col.Col_Id,Col.Col_Nombre,Cat.Cat_Id,Cat.Cat_Nombre FROM Producto Pro, Color Col, Categoria_Pro Cat WHERE Pro.Col_Id = Col.Col_Id AND Pro.Cat_Id = Cat.Cat_Id AND Pro.Pro_Cantidad > 0 AND (Pro.Pro_Id LIKE '%$buscar%' OR Pro.Pro_Nombre LIKE '%$buscar%' OR Pro.Pro_Cantidad LIKE '%$buscar%' OR Pro.Pro_Precio LIKE '%$buscar%' OR Pro.Pro_Descuento LIKE '%$buscar%' OR Col.Col_Nombre LIKE '%$buscar%' OR Cat.Cat_Nombre LIKE '%$buscar%') ORDER BY Cat.Cat_Nombre, Pro.Pro_Nombre";
             $productos = $obj->consult($sql);
 
             $sql = "SELECT Cat_Id, Cat_Nombre FROM Categoria_Pro";

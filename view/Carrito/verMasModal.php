@@ -1,5 +1,6 @@
 <?php
-    while ($pro = mysqli_fetch_assoc($producto)) {
+    if (isset($_SESSION['id'])) {
+        while ($pro = mysqli_fetch_assoc($producto)) {
 ?>
 <form action="<?php echo getUrl("Carrito", "Carrito","añadirCarrito"); ?>" method="post" enctype="multipart/form-data">
     <div class="modal-body pt-3 text-light">
@@ -76,6 +77,15 @@
         </div>
     </div>
 </form>
+
+<?php
+        }
+    } else {
+?>
+    <div class="col-12 my-4">
+        <p class="m-4 text-center text-light">Debes iniciar sesión para añadir este producto</p>
+        <a href="<?php echo getUrl("Acceso", "Acceso", "iniciar"); ?>" class="btn form-control btn-info text-center">Iniciar Sesión</a>
+    </div>
 <?php
     }
 ?>

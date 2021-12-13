@@ -2,16 +2,6 @@
 
         <!-- Nav Item - Dashboard -->
     <div class="sticky-top" style="height: 100vh; overflow-y: auto; overflow-x: hidden; padding-top: 60px;">
-        <li class="nav-item mt-4 mb-2" id="revision">
-    
-            <a class="nav-link" href="<?php echo getUrl("Admin","Admin","vista"); ?>">
-                <i class="fas fa-chart-bar"></i>
-                <span class="admin_Navegacion">Revisión</span>
-            </a>
-        </li>
-
-        <!--! Divider -->
-        <hr class="sidebar-divider">
 
         <!-- Heading -->
         <div class="sidebar-heading admin_Navegacion_titulo">

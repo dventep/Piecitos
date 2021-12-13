@@ -22,25 +22,60 @@
             <form action="<?php echo getUrl("Acceso","Acceso","signup",false,"ajax") ?>" method="post">
 
               <div class="form-floating mb-3">
-                <label for="usuario_input">Nombre Usuario</label>
-                <input type="text" class="form-control" id="usuario_input" name="usuario_input" placeholder="Nombre de Usuario" autofocus required>
+                <label for="nombre_input">Nombre</label>
+                <input type="text" class="form-control" id="nombre_input" name="nombre_input" placeholder="Nombre" <?php if (isset($_SESSION['nombre_input'])) { echo "value='".$_SESSION['nombre_input']."'"; 
+                unset($_SESSION['nombre_input']);
+                } ?> autofocus required>
+              </div>
+              <div class="form-floating mb-3">
+                <label for="apellido_input">Apellido</label>
+                <input type="text" class="form-control" id="apellido_input" name="apellido_input" placeholder="Apellido" <?php if (isset($_SESSION['apellido_input'])) { echo "value='".$_SESSION['apellido_input']."'";
+                unset($_SESSION['apellido_input']);
+                 } ?> required>
+              </div>
+              <div class="form-floating mb-3">
+                <label for="identificacion_input">Tipo de Identificación</label>                
+                <select name="identificacion_input" id="identificacion_input" class="form-control" required>                  
+                  <option value="">Seleccione..</option>
+                  <?php 
+                      while ($identificacion = mysqli_fetch_assoc($identificaciones)) {
+                  ?>
+                      <option value="<?php echo $identificacion['Tipo_Id'] ?>" <?php if (isset($_SESSION['identificacion_input']) and $_SESSION['identificacion_input'] == $identificacion['Tipo_Id']) {echo "selected";
+                      unset($_SESSION['identificacion_input']);
+                      } ?>><?php echo $identificacion['Tipo_Nombre'] ?></option>
+                  <?php
+                      }
+                  ?>
+                </select>
+              </div>
+              <div class="form-floating mb-3">
+                <label for="num_Identificacion_input">Número de Identificación</label>
+                <input type="text" class="form-control" id="num_Identificacion_input" name="num_Identificacion_input" placeholder="Número de Identificación" <?php if (isset($_SESSION['num_Identificacion_input'])) { echo "value='".$_SESSION['num_Identificacion_input']."'";
+                unset($_SESSION['num_Identificacion_input']);
+                 } ?> required>
               </div>
 
               <div class="form-floating mb-3">
                 <label for="correo_input">Correo Electrónico</label>
-                <input type="email" class="form-control" id="correo_input" name="correo_input" placeholder="luis@cacharreo.com" required>
+                <input type="email" class="form-control" id="correo_input" name="correo_input" placeholder="luis@cacharreo.com" <?php if (isset($_SESSION['correo_input'])) { echo "value='".$_SESSION['correo_input']."'";
+                unset($_SESSION['correo_input']);
+                 } ?> required>
               </div>
 
               <hr>
 
               <div class="form-floating mb-3">
                 <label for="contraseña_input">Contraseña</label>
-                <input type="password" class="form-control" id="contraseña_input" name="contraseña_input" placeholder="Contraseña" required>
+                <input type="password" class="form-control" id="contraseña_input" name="contraseña_input" placeholder="Contraseña" <?php if (isset($_SESSION['contrasena_input'])) { echo "value='".$_SESSION['contrasena_input']."'"; 
+                unset($_SESSION['contrasena_input']);
+                } ?> required>
               </div>
 
               <div class="form-floating mb-3">
                 <label for="confirmar_input">Confirmar Contraseña</label>
-                <input type="password" class="form-control" id="confirmar_input" name="confirmar_input" placeholder="Confirmar Contraseña" required>
+                <input type="password" class="form-control" id="confirmar_input" name="confirmar_input" placeholder="Confirmar Contraseña" <?php if (isset($_SESSION['confirmar_input'])) { echo "value='".$_SESSION['confirmar_input']."'";
+                unset($_SESSION['confirmar_input']);
+                 } ?> required>
               </div>
               <?php
                 if (isset($_SESSION['error'])) {
@@ -50,7 +85,7 @@
                   </div>
               <?php
                 unset($_SESSION['error']);
-                }
+                }                
               ?>
 
               <hr>

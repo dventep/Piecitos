@@ -7,31 +7,65 @@
             include_once '../view/Acceso/iniciar.php';
         }
         public function registrar() {
+            $obj = new AccesoModel();
+            $sql = "SELECT Tipo_Id, Tipo_Nombre FROM Tipo_Id";
+            $identificaciones = $obj->consult($sql);
             include_once '../view/Acceso/registrar.php';
         }
         public function signup() {
-            $obj = new AccesoModel();
+            if (isset($_POST) AND isset($_POST['nombre_input'])) {
+                $obj = new AccesoModel();
 
-            $user = $_POST['usuario_input'];
-            $correo = $_POST['correo_input'];
-            $clave = $_POST['contraseña_input'];
-            $confirm_clave = $_POST['confirmar_input'];
-            
-            if ($clave == $confirm_clave) {
-                $id = $obj->autoincrement("Usuario","Usu_Id");
-                $sql = "INSERT INTO Usuario VALUES ($id,'$user','$correo','$clave')";
+                $_SESSION['nombre_input'] = $nombre = $_POST['nombre_input'];
+                $_SESSION['apellido_input'] = $apellido = $_POST['apellido_input'];
+                $_SESSION['num_Identificacion_input'] = $num_Identificacion = $_POST['num_Identificacion_input'];
+                $_SESSION['correo_input'] = $correo = $_POST['correo_input'];
+                $_SESSION['contrasena_input'] = $clave = $_POST['contraseña_input'];
+                $_SESSION['identificacion_input'] = $identificacion = $_POST['identificacion_input'];
+                $_SESSION['confirmar_input'] = $confirm_clave = $_POST['confirmar_input'];
+                $is_Correct = True;
+                
+                $sql = "SELECT * FROM Usuario WHERE Usu_Correo = '$correo'";
+                $if_email = $obj->consult($sql);
+                $sql = "SELECT * FROM Usuario WHERE Usu_Num_Identificacion = '$num_Identificacion' AND Tipo_Id = '$identificacion'";
+                $if_identificacion = $obj->consult($sql);
 
-                $ejecutar = $obj->insert($sql);
-
-                if ($ejecutar) {
+                if ($clave != $confirm_clave) {
+                    $is_Correct = False;
+                    $_SESSION['error'] = "Las contraseñas deben ser iguales.";
                     redirect(getUrl("Acceso","Acceso","registrar"));
-                } else {
-                    echo "Ha ocurrido un error al registrarte";
-                    echo "<a href='".getUrl("Acceso","Acceso","registrar")."'>Volver a Registrarme</a>";
+                } else if (mysqli_num_rows($if_email) > 0) {
+                    $is_Correct = False;
+                    $_SESSION['error'] = "El correo ($correo) ya está tomado.";
+                    redirect(getUrl("Acceso","Acceso","registrar"));
+                } else if (mysqli_num_rows($if_identificacion) > 0) {
+                    $is_Correct = False;
+                    $_SESSION['error'] = "Ya existe una cuenta con este número de identificación ($num_Identificacion).";
+                    redirect(getUrl("Acceso","Acceso","registrar"));
+                }
+                if ($is_Correct == True) {
+                    $id = $obj->autoincrement("Usuario","Usu_Id");
+                    $sql = "INSERT INTO Usuario VALUES ($id,'$nombre', '$apellido', Null, Null, $num_Identificacion, '$correo','$clave', NULL, $identificacion, 1)";
+
+                    $ejecutar = $obj->insert($sql);
+
+                    if ($ejecutar) {
+                        unset($_SESSION['nombre_input']);
+                        unset($_SESSION['apellido_input']);
+                        unset($_SESSION['num_Identificacion_input']);
+                        unset($_SESSION['correo_input']);
+                        unset($_SESSION['contrasena_input']);
+                        unset($_SESSION['identificacion_input']);
+                        unset($_SESSION['confirmar_input']);
+                        redirect(getUrl("Acceso","Acceso","iniciar"));
+                        print("<br>Todo correcto");
+                    } else {
+                        $_SESSION['error'] = "Ha ocurrido un error al registrarte";
+                        redirect(getUrl("Acceso","Acceso","registrar"));
+                    }
                 }
             } else {
-                $_SESSION['error'] = "Las contraseñas deben ser iguales.";
-                redirect(getUrl("Acceso","Acceso","registrar"));
+                redirect(getUrl("Acceso", "Acceso", "registrar"));
             }
         }
         public function login() {

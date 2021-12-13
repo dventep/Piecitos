@@ -19,7 +19,7 @@
                         <?php
                             if (isset($_SESSION['rol_id']) AND ($_SESSION['rol_id'] != 1)) {
                         ?>
-                            <li class="nav-item"><a class="nav-link" href="<?php echo getUrl("Admin","Admin","vista"); ?>"style="text-decoration:none;" >Admin</a></li>
+                            <li class="nav-item"><a class="nav-link" href="<?php echo getUrl("Producto","Producto","catalogo"); ?>"style="text-decoration:none;" >Admin</a></li>
                         <?php
                             }
                         ?>
